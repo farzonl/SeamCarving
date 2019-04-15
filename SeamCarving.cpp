@@ -25,15 +25,15 @@ SeamCarving::SeamCarving(char* fileName, int seams) : seams(seams) {
         }
         std::vector<int> seam = getLeastImportantPath(pathIntensityMat);
         vecSeams.push_back(seam);
-        //newFrame = removeLeastImportantPath(newFrame,seam);
+        newFrame = removeLeastImportantPath(newFrame,seam);
         if(newFrame.rows == 0 && newFrame.cols == 0) {
             this->finalImage = this->image;
             break;
         }
     }
-    for(int i = 0; i < vecSeams.size(); i++) {
+    /*for(int i = 0; i < vecSeams.size(); i++) {
         newFrame = drawSeam(newFrame, vecSeams[i]);
-    }
+    }*/
     this->finalImage = newFrame;
 }
 
@@ -179,16 +179,12 @@ cv::Mat SeamCarving::removeLeastImportantPath(const cv::Mat &original, const std
     cv::Size orgSize = original.size();
     // new mat needs to shrink by one collumn
     cv::Size size = cv::Size(orgSize.width-1, orgSize.height);
-    cv::Mat newMat = cv::Mat(size, CV_8UC4);
+    cv::Mat newMat = cv::Mat(size, original.type());
+
     unsigned char *rawOrig = original.data;
     unsigned char *rawOutput = newMat.data;
     for(int row = 0; row < seam.size(); row++) {
-        int startIndex = row * newMat.cols * newMat.channels(); //+ 0 * newMat.channels();
-        int endIndex   = row * newMat.cols * newMat.channels() + seam[row] * newMat.channels();
-        memcpy(rawOutput+startIndex,rawOrig+startIndex,endIndex-startIndex);
-        startIndex = endIndex+1;
-        endIndex   = row * newMat.cols * newMat.channels() + seam.size()-1 * newMat.channels();
-        memcpy(rawOutput+startIndex,rawOrig+startIndex,endIndex-startIndex);
+        removePixel(original, newMat, row, seam[row]);
     }
     return newMat;
 }
@@ -227,7 +223,7 @@ std::vector<int> SeamCarving::getLeastImportantPath(const cv::Mat &importanceMap
 
     return leastEnergySeam;
 }
-/*
+
 void SeamCarving::removePixel(const cv::Mat &original, cv::Mat &outputMat, int row, int minCol) {
     int width = original.cols;
     int channels = original.channels();
@@ -291,4 +287,4 @@ void SeamCarving::removePixel(const cv::Mat &original, cv::Mat &outputMat, int r
         rawOutput[newRowStart + leftPixel*channels+1] = (unsigned char) ((byte2 + byte2L)/2);
         rawOutput[newRowStart + leftPixel*channels+2] = (unsigned char) ((byte3 + byte3L)/2);
     }
-}*/
+}

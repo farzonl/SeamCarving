@@ -6,7 +6,7 @@
 class SeamCarving
 {
   public:
-    SeamCarving(char* fileName, int seams=1);
+    SeamCarving(char* fileName, int seams=300);
     void showImage();
 
   private:
@@ -16,7 +16,7 @@ class SeamCarving
     std::vector<int> getLeastImportantPath(const cv::Mat &importanceMap);
     cv::Mat removeLeastImportantPath(const cv::Mat &original, const std::vector<int> &seam);
     cv::Mat drawSeam(const cv::Mat &frame, const std::vector<int> &seam);
-    //void removePixel(const cv::Mat &original, cv::Mat &importanceMap, int row, int minCol);
+    void removePixel(const cv::Mat &original, cv::Mat &outputMap, int row, int minCol);
     float intensity(float currIndex, int col, int nCols);
     cv::Mat image;
     cv::Mat finalImage;
