@@ -5,28 +5,27 @@
 #include <iostream>
 #include <cfloat> 
 
-#define DEBUG 0
+#define DEBUG 1
 
 SeamCarving::SeamCarving(char* fileName, int seams) : seams(seams) {
     this->image = cv::imread(fileName, cv::IMREAD_COLOR);
     cv::Mat newFrame = image.clone();
-    
+
     for(int i = 0; i < seams; i++) {
-		//Gradient Magnitude for intensity of image.
-		cv::Mat gradientMagnitude = computeGradientMagnitude(newFrame);
-		
-		//Use DP to create the real energy map that is used for path calculation.  
+        //Gradient Magnitude for intensity of image.
+        cv::Mat gradientMagnitude = computeGradientMagnitude(newFrame);
+
+        //Use DP to create the real energy map that is used for path calculation.  
         // Strictly using vertical paths for testing simplicity.
-		cv::Mat pathIntensityMat = computePathIntensityMat(gradientMagnitude);
-		
-		if(pathIntensityMat.rows == 0 && pathIntensityMat.cols == 0) {
+        cv::Mat pathIntensityMat = computePathIntensityMat(gradientMagnitude);
+
+        if(pathIntensityMat.rows == 0 && pathIntensityMat.cols == 0) {
             this->finalImage = this->image;
             break;
         }
+        newFrame = removeLeastImportantPath(newFrame, pathIntensityMat);
 
-		newFrame = removeLeastImportantPath(newFrame, pathIntensityMat);
-		
-		if(newFrame.rows == 0 && newFrame.cols == 0) {
+        if(newFrame.rows == 0 && newFrame.cols == 0) {
             this->finalImage = this->image;
             break;
         }
@@ -51,14 +50,24 @@ void SeamCarving::showImage() {
 #if DEBUG
     namedWindow( "gradient Image", cv::WINDOW_AUTOSIZE );
     cv::Mat gradient = computeGradientMagnitude(image);
-    cv::imshow("gradient Image", gradient);
+    cv::Mat u8_image;
+    gradient.convertTo(u8_image, CV_8U);
+    
+    cv::imshow("gradient Image", u8_image);
 
     namedWindow( "intensity Image", cv::WINDOW_AUTOSIZE );
-    cv::imshow( "intensity Image", computePathIntensityMat(gradient));
+    cv::Mat u8_image2;
+    cv::Mat intensityMat = computePathIntensityMat(gradient);
+    cv::Mat dst;
+    cv::normalize(intensityMat, dst, 0, 255, cv::NORM_MINMAX);
+    dst.convertTo(u8_image2, CV_8U);
+    cv::imshow( "intensity Image", u8_image2);
 
-    cv::Mat engImg = GetEnergyImg(image);
-    namedWindow("energy Image", cv::WINDOW_AUTOSIZE);
-    cv::imshow( "energy Image", engImg);
+    //cv::Mat engImg = GetEnergyImg(image);
+    //namedWindow("energy Image", cv::WINDOW_AUTOSIZE);
+    //cv::Mat u8_image3;
+    //engImg.convertTo(u8_image3, CV_8U);
+    //cv::imshow( "energy Image", u8_image3);
 #endif
 
     namedWindow( "Final Image", cv::WINDOW_AUTOSIZE );
@@ -175,18 +184,16 @@ cv::Mat SeamCarving::removeLeastImportantPath(const cv::Mat &original, const cv:
     removePixel(original, newMat, original.rows - 1, minCol);
 
     for(int row = original.rows - 2; row >= 0; row--) {
-    	float p1 = intensity(importanceMap.at<float>(row, minCol-1), minCol - 1, importanceMap.cols);
-    	float p2 = intensity(importanceMap.at<float>(row, minCol), minCol, importanceMap.cols);
-    	float p3 = intensity(importanceMap.at<float>(row, minCol+1), minCol + 1, importanceMap.cols);
-    
-    	//Adjust the min column for path following
-    	if(p1 < p2 && p1 < p3) {
-    		minCol -= 1;
-    	} else if(p3 < p1 && p3 < p2) {
-    		minCol += 1;
-    	}
-    
-    	removePixel(original, newMat, row, minCol);
+        float p1 = intensity(importanceMap.at<float>(row, minCol-1), minCol - 1, importanceMap.cols);
+        float p2 = intensity(importanceMap.at<float>(row, minCol), minCol, importanceMap.cols);
+        float p3 = intensity(importanceMap.at<float>(row, minCol+1), minCol + 1, importanceMap.cols);
+        //Adjust the min column for path following
+        if(p1 < p2 && p1 < p3) {
+            minCol -= 1;
+        } else if(p3 < p1 && p3 < p2) {
+            minCol += 1;
+        }
+        removePixel(original, newMat, row, minCol);
     }
 
     return newMat;

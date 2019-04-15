@@ -6,7 +6,7 @@
 class SeamCarving
 {
   public:
-    SeamCarving(char* fileName, int seams=400);
+    SeamCarving(char* fileName, int seams=300);
     void showImage();
 
   private:
