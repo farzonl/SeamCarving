@@ -10,7 +10,7 @@
 SeamCarving::SeamCarving(char* fileName, int seams) : seams(seams) {
     this->image = cv::imread(fileName, cv::IMREAD_COLOR);
     cv::Mat newFrame = image.clone();
-
+    std::vector<std::vector<int>> vecSeams;
     for(int i = 0; i < seams; i++) {
         //Gradient Magnitude for intensity of image.
         cv::Mat gradientMagnitude = computeGradientMagnitude(newFrame);
@@ -23,14 +23,30 @@ SeamCarving::SeamCarving(char* fileName, int seams) : seams(seams) {
             this->finalImage = this->image;
             break;
         }
-        newFrame = removeLeastImportantPath(newFrame, pathIntensityMat);
-
+        std::vector<int> seam = getLeastImportantPath(pathIntensityMat);
+        vecSeams.push_back(seam);
+        //newFrame = removeLeastImportantPath(newFrame,seam);
         if(newFrame.rows == 0 && newFrame.cols == 0) {
             this->finalImage = this->image;
             break;
         }
     }
+    for(int i = 0; i < vecSeams.size(); i++) {
+        newFrame = drawSeam(newFrame, vecSeams[i]);
+    }
     this->finalImage = newFrame;
+}
+
+cv::Mat SeamCarving::drawSeam(const cv::Mat &frame, const std::vector<int> &seam) {
+    cv::Mat retMat = frame.clone();
+    for(int row = 0; row < frame.rows; row++) {
+        for(int col = 0; col < frame.cols; col++) {
+            retMat.at<cv::Vec3b>(row, seam[row])[0] = 0;
+            retMat.at<cv::Vec3b>(row, seam[row])[1] = 255;
+            retMat.at<cv::Vec3b>(row, seam[row])[2] = 0;
+        }
+    }
+    return retMat;
 }
 
 void SeamCarving::showImage() {
@@ -159,17 +175,30 @@ cv::Mat SeamCarving::computePathIntensityMat(const cv::Mat &rawEnergyMap) {
 	return pathIntensityMap;
 }
 
-cv::Mat SeamCarving::removeLeastImportantPath(const cv::Mat &original, const cv::Mat &importanceMap) {
+cv::Mat SeamCarving::removeLeastImportantPath(const cv::Mat &original, const std::vector<int> &seam) {
     cv::Size orgSize = original.size();
     // new mat needs to shrink by one collumn
     cv::Size size = cv::Size(orgSize.width-1, orgSize.height);
     cv::Mat newMat = cv::Mat(size, CV_8UC4);
+    unsigned char *rawOrig = original.data;
+    unsigned char *rawOutput = newMat.data;
+    for(int row = 0; row < seam.size(); row++) {
+        int startIndex = row * newMat.cols * newMat.channels(); //+ 0 * newMat.channels();
+        int endIndex   = row * newMat.cols * newMat.channels() + seam[row] * newMat.channels();
+        memcpy(rawOutput+startIndex,rawOrig+startIndex,endIndex-startIndex);
+        startIndex = endIndex+1;
+        endIndex   = row * newMat.cols * newMat.channels() + seam.size()-1 * newMat.channels();
+        memcpy(rawOutput+startIndex,rawOrig+startIndex,endIndex-startIndex);
+    }
+    return newMat;
+}
 
-    if(importanceMap.total() == 0 || original.total() == 0)  {
-        return cv::Mat();
+std::vector<int> SeamCarving::getLeastImportantPath(const cv::Mat &importanceMap) {
+    if(importanceMap.total() == 0)  {
+        return std::vector<int>();
     }
 
-    //Find the beginning of the least important path.  Trying an averaging approach because absolute min wasn't very reliable.
+    //Find the beginning of the least important path. Trying an averaging approach because absolute min wasn't very reliable.
     float minImportance = importanceMap.at<float>(importanceMap.rows - 1, 0);
     int minCol = 0;
     for (int col = 1; col < importanceMap.cols; col++)
@@ -181,9 +210,9 @@ cv::Mat SeamCarving::removeLeastImportantPath(const cv::Mat &original, const cv:
         }
     }
 
-    removePixel(original, newMat, original.rows - 1, minCol);
-
-    for(int row = original.rows - 2; row >= 0; row--) {
+    std::vector<int> leastEnergySeam(importanceMap.rows);
+    leastEnergySeam[importanceMap.rows-1] = minCol;
+    for(int row = importanceMap.rows - 2; row >= 0; row--) {
         float p1 = intensity(importanceMap.at<float>(row, minCol-1), minCol - 1, importanceMap.cols);
         float p2 = intensity(importanceMap.at<float>(row, minCol), minCol, importanceMap.cols);
         float p3 = intensity(importanceMap.at<float>(row, minCol+1), minCol + 1, importanceMap.cols);
@@ -193,12 +222,12 @@ cv::Mat SeamCarving::removeLeastImportantPath(const cv::Mat &original, const cv:
         } else if(p3 < p1 && p3 < p2) {
             minCol += 1;
         }
-        removePixel(original, newMat, row, minCol);
+        leastEnergySeam[row] = minCol;
     }
 
-    return newMat;
+    return leastEnergySeam;
 }
-
+/*
 void SeamCarving::removePixel(const cv::Mat &original, cv::Mat &outputMat, int row, int minCol) {
     int width = original.cols;
     int channels = original.channels();
@@ -262,4 +291,4 @@ void SeamCarving::removePixel(const cv::Mat &original, cv::Mat &outputMat, int r
         rawOutput[newRowStart + leftPixel*channels+1] = (unsigned char) ((byte2 + byte2L)/2);
         rawOutput[newRowStart + leftPixel*channels+2] = (unsigned char) ((byte3 + byte3L)/2);
     }
-}
+}*/
