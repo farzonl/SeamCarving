@@ -5,16 +5,14 @@
 #include <iostream>
 #include <cfloat> 
 
-#define DEBUG 1
 
 SeamCarving::SeamCarving(char* fileName, int seams) : seams(seams) {
     this->image = cv::imread(fileName, cv::IMREAD_COLOR);
     cv::Mat newFrame = image.clone();
-    std::vector<std::vector<int>> vecSeams;
+   
     for(int i = 0; i < seams; i++) {
         //Gradient Magnitude for intensity of image.
         cv::Mat gradientMagnitude = computeGradientMagnitude(newFrame);
-
         //Use DP to create the real energy map that is used for path calculation.  
         // Strictly using vertical paths for testing simplicity.
         cv::Mat pathIntensityMat = computePathIntensityMat(gradientMagnitude);
@@ -24,16 +22,15 @@ SeamCarving::SeamCarving(char* fileName, int seams) : seams(seams) {
             break;
         }
         std::vector<int> seam = getLeastImportantPath(pathIntensityMat);
-        vecSeams.push_back(seam);
+#if DEBUG
+        this->vecSeams.push_back(seam);
+#endif
         newFrame = removeLeastImportantPath(newFrame,seam);
         if(newFrame.rows == 0 && newFrame.cols == 0) {
             this->finalImage = this->image;
             break;
         }
     }
-    /*for(int i = 0; i < vecSeams.size(); i++) {
-        newFrame = drawSeam(newFrame, vecSeams[i]);
-    }*/
     this->finalImage = newFrame;
 }
 
@@ -84,6 +81,12 @@ void SeamCarving::showImage() {
     //cv::Mat u8_image3;
     //engImg.convertTo(u8_image3, CV_8U);
     //cv::imshow( "energy Image", u8_image3);
+    cv::Mat seamsFrame = image.clone();
+    for(int i = 0; i < this->vecSeams.size(); i++) {
+        seamsFrame = drawSeam(seamsFrame, this->vecSeams[i]);
+    }
+    namedWindow("Image Seams", cv::WINDOW_AUTOSIZE);
+    cv::imshow( "Image Seams", seamsFrame);
 #endif
 
     namedWindow( "Final Image", cv::WINDOW_AUTOSIZE );

@@ -2,11 +2,11 @@
 #define __SEAM__CARVING_HPP__
 
 #include <opencv2/core/core.hpp>
-
+#define DEBUG 1
 class SeamCarving
 {
   public:
-    SeamCarving(char* fileName, int seams=300);
+    SeamCarving(char* fileName, int seams=1000);
     void showImage();
 
   private:
@@ -21,6 +21,9 @@ class SeamCarving
     cv::Mat image;
     cv::Mat finalImage;
     int seams;
+#if DEBUG
+     std::vector<std::vector<int>> vecSeams;
+#endif
 };
 
 #endif // __SEAM__CARVING_HPP__
