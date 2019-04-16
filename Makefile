@@ -2,6 +2,7 @@
 
 
 OPTIONS =  -std=c++11 
+FILES := SeamCarving.o SeamCarvingHorizontal.o SeamCarvingVertical.o main.o
 
 CFLAGS = $(INCPATH) $(LIBPATH) $(OPTIONS)
 UNAME := $(shell uname)
@@ -17,7 +18,8 @@ INCPATH = `pkg-config opencv --cflags`
 LIBPATH = `pkg-config opencv --libs`
 endif
 
-run : build-release
+#Small enough project so lets rebuild everytime
+run : rebuild
 	./$(EXE) sampleImg1.jpg
 
 
@@ -43,16 +45,16 @@ run-valgrind : build-debug
 
 build-release : CFLAGS += -O3
 
-build-release : SeamCarving.o
-	$(CC) SeamCarving.o main.cpp -o $(EXE) $(CFLAGS)
+build-release : $(EXE)
+
+$(EXE) : $(FILES)
+	$(CC) $^ -o $(EXE) $(CFLAGS)
 
 build-debug : CFLAGS += -g -DDEBUG
-build-debug : SeamCarving.o
-	$(CC) SeamCarving.o main.cpp -o $(EXE) $(CFLAGS)
-
-SeamCarving.o : SeamCarving.cpp SeamCarving.hpp
-		$(CC) -c SeamCarving.cpp $(CFLAGS)
+build-debug : $(EXE)
 
 clean :
-	rm *.o* $(EXE)*
+	rm -rf *.o* $(EXE)*
+
+rebuild : clean build-release
 
