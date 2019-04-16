@@ -20,7 +20,7 @@ endif
 
 #Small enough project so lets rebuild everytime
 run : rebuild
-	./$(EXE) sampleImg1.jpg
+	./$(EXE) sampleImg2.jpg
 
 
 run-debug : build-debug
