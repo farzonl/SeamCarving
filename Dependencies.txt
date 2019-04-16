@@ -1,0 +1,11 @@
+For Mac
+   brew install opencv
+
+For Linux
+  sudo apt-get install libopencv-dev pkg-config
+
+For Windows
+   install the linux subsystem for windows and Xmig for X11 windows
+   run the linux steps
+
+After installing dependencies you can now call make
