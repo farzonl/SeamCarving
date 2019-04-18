@@ -92,9 +92,9 @@ void SeamCarving::showSeamsImg() {
 static void onChange( int pos, void* object )
 {
    SeamCarving* sc = (SeamCarving*)(object);
-   if(sc->getBlockUpdateStatus()) {
+   /*if(sc->getBlockUpdateStatus()) {
        return;
-   }
+   }*/
    sc->computeNewFinalImage(pos);
    imshow("Final Image", sc->getFinalImage());
 #if DEBUG
@@ -166,7 +166,7 @@ void SeamCarving::showImage() {
 
     namedWindow( "Final Image", cv::WINDOW_AUTOSIZE );
     cv::createTrackbar("Seams", "Final Image", &sliderPos, sliderMax, onChange, this);
-    cv::setMouseCallback("Final Image", onMouse, this );
+    //cv::setMouseCallback("Final Image", onMouse, this );
     cv::imshow("Final Image", finalImage);
     cv::waitKey(0); 
 }
