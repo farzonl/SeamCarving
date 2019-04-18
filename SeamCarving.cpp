@@ -22,17 +22,107 @@ void SeamCarving::init() {
             break;
         }
         std::vector<int> seam = getLeastImportantPath(pathIntensityMat);
-#if DEBUG
         this->vecSeams.push_back(seam);
-#endif
         newFrame = removeLeastImportantPath(newFrame,seam);
         if(newFrame.rows == 0 && newFrame.cols == 0) {
             this->finalImage = this->image;
             break;
         }
     }
+    this->sliderPos = seams;
     this->finalImage = newFrame;
 }
+
+void SeamCarving::computeNewFinalImage(int sliderPos) {
+    if(sliderPos == 0) {
+        this->finalImage =  this->image;
+        return;
+    }
+    if(sliderPos < 1 || sliderPos >= sliderMax-1) {
+        return;
+    }
+    if(sliderPos > vecSeams.size()) {
+        cv::Mat newFrame = finalImage.clone();
+        for(int i = vecSeams.size()-1; i < this->sliderPos; i++) {
+            //Gradient Magnitude for intensity of image.
+            cv::Mat gradientMagnitude = computeGradientMagnitude(newFrame);
+            //Use DP to create the real energy map that is used for path calculation.  
+            // Strictly using vertical paths for testing simplicity.
+            cv::Mat pathIntensityMat = computePathIntensityMat(gradientMagnitude);
+
+            if(pathIntensityMat.rows == 0 && pathIntensityMat.cols == 0) {
+                this->finalImage = this->image;
+                break;
+            }
+            std::vector<int> seam = getLeastImportantPath(pathIntensityMat);
+            this->vecSeams.push_back(seam);
+            newFrame = removeLeastImportantPath(newFrame,seam);
+            if(newFrame.rows == 0 && newFrame.cols == 0) {
+                this->finalImage = this->image;
+                break;
+            }
+        }
+        this->finalImage = newFrame;
+    } else if (sliderPos < vecSeams.size()) {
+        cv::Mat newFrame = image.clone();
+        for(int i = 0; i < this->sliderPos; i++) { // TODO check if it is faster to add seams back (probably not)
+            newFrame = removeLeastImportantPath(newFrame,vecSeams[i]);
+            if(newFrame.rows == 0 && newFrame.cols == 0) {
+                this->finalImage = this->image;
+                break;
+            }
+        }
+        this->finalImage = newFrame;
+    }
+}
+
+const cv::Mat& SeamCarving::getFinalImage() {
+    return this->finalImage;
+}
+
+void SeamCarving::showSeamsImg() {
+    cv::Mat seamsFrame = image.clone();
+    //std::cout << "sliderPos: " << sliderPos << std::endl;
+    for(int i = 0; i < sliderPos; i++) {
+        seamsFrame = drawSeam(seamsFrame, this->vecSeams[i]);
+    }
+    cv::imshow( "Image Seams", seamsFrame);
+}
+
+static void onChange( int pos, void* object )
+{
+   SeamCarving* sc = (SeamCarving*)(object);
+   if(sc->getBlockUpdateStatus()) {
+       return;
+   }
+   sc->computeNewFinalImage(pos);
+   imshow("Final Image", sc->getFinalImage());
+#if DEBUG
+    sc->showSeamsImg();
+#endif
+}
+static void onMouse( int event, int x, int y, int, void* object)
+{
+    SeamCarving* sc = (SeamCarving*)(object);
+    if( event == cv::EVENT_LBUTTONDOWN || 
+        event == cv::EVENT_RBUTTONDOWN ||
+        event == cv::EVENT_MBUTTONDOWN
+      ) {
+          sc->setBlockUpdate(true);
+    } else if(cv::EVENT_LBUTTONUP ||
+              cv::EVENT_RBUTTONUP ||
+              cv::EVENT_MBUTTONUP) { 
+         sc->setBlockUpdate(false);
+     }
+}
+
+void SeamCarving::setBlockUpdate(bool bUpdate) {
+    this->blockUpdate = bUpdate;
+}
+
+ bool SeamCarving::getBlockUpdateStatus() {
+     return this->blockUpdate;
+ }
 
 void SeamCarving::showImage() {
     if( image.empty() ) 
@@ -69,16 +159,15 @@ void SeamCarving::showImage() {
     //cv::Mat u8_image3;
     //engImg.convertTo(u8_image3, CV_8U);
     //cv::imshow( "energy Image", u8_image3);
-    cv::Mat seamsFrame = image.clone();
-    for(int i = 0; i < this->vecSeams.size(); i++) {
-        seamsFrame = drawSeam(seamsFrame, this->vecSeams[i]);
-    }
     namedWindow("Image Seams", cv::WINDOW_AUTOSIZE);
-    cv::imshow( "Image Seams", seamsFrame);
+    showSeamsImg();
+    
 #endif
 
     namedWindow( "Final Image", cv::WINDOW_AUTOSIZE );
-    cv::imshow( "Final Image", finalImage );
+    cv::createTrackbar("Seams", "Final Image", &sliderPos, sliderMax, onChange, this);
+    cv::setMouseCallback("Final Image", onMouse, this );
+    cv::imshow("Final Image", finalImage);
     cv::waitKey(0); 
 }
 
