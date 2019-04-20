@@ -1,26 +1,22 @@
-#_____________G++ STUFF__________________________________________
-
-
+#_____________STATIC STUFF__________________________________________
 OPTIONS =  -std=c++11 
-FILES := SeamCarving.o SeamCarvingHorizontal.o SeamCarvingVertical.o main.o
-
-CFLAGS = $(INCPATH) $(LIBPATH) $(OPTIONS)
+FILES := SeamCarving.cpp SeamCarvingHorizontal.cpp SeamCarvingVertical.cpp main.cpp
 UNAME := $(shell uname)
-EXE     := $(UNAME)_SeamCarving
-#_____________G++________________________________________________
+EXE   := $(UNAME)_SeamCarving
+#_____________STATIC STUFF________________________________________________
 ifeq ($(UNAME),Darwin)
-CC = clang++
-INCPATH = -I/usr/local/Cellar/opencv/4.0.1/include/opencv4/
-LIBPATH = -L/usr/local/Cellar/opencv/4.0.1/lib -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs
+CC := clang++
+INCPATH := -I/usr/local/Cellar/opencv/4.0.1/include/opencv4/
+LIBPATH := -L/usr/local/Cellar/opencv/4.0.1/lib -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs
 else
-CC = g++
-INCPATH = `pkg-config opencv --cflags`
-LIBPATH = `pkg-config opencv --libs`
+CC := g++
+INCPATH := `pkg-config opencv --cflags`
+LIBPATH := `pkg-config opencv --libs`
 endif
-
+CFLAGS := $(INCPATH) $(LIBPATH) $(OPTIONS)
 #Small enough project so lets rebuild everytime
 run : rebuild
-	./$(EXE) img/sampleImg2.jpg
+	./$(EXE) img/sampleImg2.jpg -h -n 20
 
 
 run-debug : build-debug
@@ -44,7 +40,6 @@ run-valgrind : build-debug
 	valgrind --leak-check=yes --show-reachable=yes --tool=memcheck ./EXE
 
 build-release : CFLAGS += -O3
-
 build-release : $(EXE)
 
 $(EXE) : $(FILES)

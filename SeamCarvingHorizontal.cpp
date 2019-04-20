@@ -21,5 +21,6 @@ cv::Mat SeamCarvingHorizontal::drawSeam(const cv::Mat &frame, const std::vector<
 SeamCarvingHorizontal::SeamCarvingHorizontal(char* fileName, int seams, int grow) : 
     SeamCarving( cv::imread(fileName, cv::IMREAD_COLOR), seams, grow)
 {
+    this->sliderMax = this->image.cols;
     init();
 }

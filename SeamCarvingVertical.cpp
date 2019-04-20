@@ -8,6 +8,7 @@
 SeamCarvingVertical::SeamCarvingVertical(char* fileName, int seams, int grow) : 
     SeamCarving( cv::imread(fileName, cv::IMREAD_COLOR), seams, grow)
 {
+    this->sliderMax = this->image.rows;
     cv::Mat oldImage = this->image;
     this->image = this->image.t();
     init();
@@ -25,4 +26,12 @@ cv::Mat SeamCarvingVertical::drawSeam(const cv::Mat &frame, const std::vector<in
         }
     }
     return retMat;
+}
+
+void SeamCarvingVertical::computeNewFinalImage(int pos) {
+    cv::Mat oldImage = this->image;
+    this->image = this->image.t();
+    SeamCarving::computeNewFinalImage(pos);
+    this->image = oldImage;
+    this->finalImage =this->finalImage.t();
 }
