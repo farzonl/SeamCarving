@@ -5,8 +5,8 @@
 #include <iostream>
 #include <cfloat> 
 
-SeamCarvingVertical::SeamCarvingVertical(char* fileName, int seams) : 
-    SeamCarving( cv::imread(fileName, cv::IMREAD_COLOR), seams)
+SeamCarvingVertical::SeamCarvingVertical(char* fileName, int seams, int grow) : 
+    SeamCarving( cv::imread(fileName, cv::IMREAD_COLOR), seams, grow)
 {
     cv::Mat oldImage = this->image;
     this->image = this->image.t();

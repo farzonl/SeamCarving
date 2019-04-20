@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cfloat> 
 
-SeamCarving::SeamCarving(const cv::Mat &img,int seams) : image(img), seams(seams) {}
+SeamCarving::SeamCarving(const cv::Mat &img, int seams, int grow) : image(img), seams(seams) {}
 
 void SeamCarving::init() {
     cv::Mat newFrame = image.clone();
@@ -24,8 +24,14 @@ void SeamCarving::init() {
         std::vector<int> seam = getLeastImportantPath(pathIntensityMat);
 #if DEBUG
         this->vecSeams.push_back(seam);
-#endif
-        newFrame = removeLeastImportantPath(newFrame,seam);
+#endif  
+        if (grow) {
+            newFrame = addLeastImportantPath(newFrame,seam);
+        }
+        else {
+            newFrame = removeLeastImportantPath(newFrame,seam);
+        } 
+        
         if(newFrame.rows == 0 && newFrame.cols == 0) {
             this->finalImage = this->image;
             break;
@@ -235,6 +241,83 @@ void SeamCarving::removePixel(const cv::Mat &original, cv::Mat &outputMat, int r
     //std::cout << "originRowMid: " << originRowMid << std::endl;
     //std::cout << "newRowMid: " << newRowMid << std::endl;
     //std::cout << "secondNum: " << secondNum << std::endl;
+    memcpy(rawOutput + newRowMid, rawOrig + originRowMid, secondNum);
+
+    int leftPixel = minCol - 1;
+    int rightPixel = minCol + 1;
+
+    int byte1 = rawOrig[originRowStart + minCol * channels];
+    int byte2 = rawOrig[originRowStart + minCol * channels + 1];
+    int byte3 = rawOrig[originRowStart + minCol * channels + 2];
+
+    if (byte1 < 0)
+        byte1 += 256;
+    if (byte2 < 0)
+        byte2 += 256;
+    if (byte3 < 0)
+        byte3 += 256;
+
+    if (rightPixel < width) {
+        int byte1R = rawOrig[originRowStart + rightPixel * channels];
+        int byte2R = rawOrig[originRowStart + rightPixel * channels + 1];
+        int byte3R = rawOrig[originRowStart + rightPixel * channels + 2];
+        if (byte1R < 0)
+            byte1R += 256;
+        if (byte2R < 0)
+            byte2R += 256;
+        if (byte3R < 0)
+            byte3R += 256;
+        rawOutput[newRowStart + minCol * channels] = (unsigned char)((byte1 + byte1R) / 2);
+        rawOutput[newRowStart + minCol * channels + 1] = (unsigned char)((byte2 + byte2R) / 2);
+        rawOutput[newRowStart + minCol * channels + 2] = (unsigned char)((byte3 + byte3R) / 2);
+    }
+
+    if(leftPixel >= 0) {
+        int byte1L = rawOrig[originRowStart + leftPixel*channels];
+        int byte2L = rawOrig[originRowStart + leftPixel*channels+1];
+        int byte3L = rawOrig[originRowStart + leftPixel*channels+2];
+        if(byte1L < 0) byte1L += 256;
+        if(byte2L < 0) byte2L += 256;
+        if(byte3L < 0) byte3L += 256;
+        rawOutput[newRowStart + leftPixel*channels] = (unsigned char) ((byte1 + byte1L)/2);
+        rawOutput[newRowStart + leftPixel*channels+1] = (unsigned char) ((byte2 + byte2L)/2);
+        rawOutput[newRowStart + leftPixel*channels+2] = (unsigned char) ((byte3 + byte3L)/2);
+    }
+}
+
+cv::Mat SeamCarving::addLeastImportantPath(const cv::Mat &original, const std::vector<int> &seam) {
+    cv::Size orgSize = original.size();
+    // new mat needs to grow by one column
+    cv::Size size = cv::Size(orgSize.width+1, orgSize.height);
+    cv::Mat newMat = cv::Mat(size, original.type());
+
+    unsigned char *rawOrig = original.data;
+    unsigned char *rawOutput = newMat.data;
+    for(int row = 0; row < seam.size(); row++) {
+        //std::cout << "row: " << row << ", col: " << seam[row] << std::endl;
+        addPixel(original, newMat, row, seam[row]);
+    }
+    return newMat;
+}
+
+void SeamCarving::addPixel(const cv::Mat &original, cv::Mat &outputMat, int row, int minCol) {
+    int width = original.cols;
+    int channels = original.channels();
+    int originRowStart = row * channels * width;
+    int newRowStart = row * channels * (width + 1);
+    int firstNum = (minCol + 1) * channels;
+
+    unsigned char *rawOrig = original.data;
+    unsigned char *rawOutput = outputMat.data;
+
+    memcpy(rawOutput + newRowStart, rawOrig + originRowStart, firstNum);
+
+    memcpy(rawOutput + newRowStart + firstNum, rawOrig + originRowStart + firstNum, channels);
+
+    int originRowMid = originRowStart + ((minCol + 1) * channels);
+    int newRowMid = newRowStart + ((minCol + 2) * channels);
+    int secondNum = (width * channels) - firstNum;
+
     memcpy(rawOutput + newRowMid, rawOrig + originRowMid, secondNum);
 
     int leftPixel = minCol - 1;

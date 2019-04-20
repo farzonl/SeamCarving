@@ -20,14 +20,14 @@ endif
 
 #Small enough project so lets rebuild everytime
 run : rebuild
-	./$(EXE) sampleImg2.jpg
+	./$(EXE) img/sampleImg2.jpg
 
 
 run-debug : build-debug
-	./$(EXE) sampleImg1.jpg
+	./$(EXE) img/sampleImg1.jpg
 
 run-gdb : build-debug
-	gdb --args ./$(EXE) sampleImg1.jpg
+	gdb --args ./$(EXE) img/sampleImg1.jpg
 
 edit0 : 
 	nano -c main.cpp
