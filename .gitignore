@@ -1,3 +1,4 @@
 *.o
 *_SeamCarving
 Debug/*
+output/*
