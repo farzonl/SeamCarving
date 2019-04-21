@@ -1,15 +1,17 @@
 #_____________STATIC STUFF__________________________________________
-OPTIONS =  -std=c++17 -lstdc++fs
+OPTIONS =  -std=c++17
 FILES := SeamCarving.cpp SeamCarvingHorizontal.cpp SeamCarvingVertical.cpp main.cpp
 UNAME := $(shell uname)
 EXE   := $(UNAME)_SeamCarving
 #_____________STATIC STUFF________________________________________________
 ifeq ($(UNAME),Darwin)
-CC := clang++
+#OPTIONS += -lc++fs
+CC := /usr/local/Cellar/llvm/8.0.0/bin/clang++
 INCPATH := -I/usr/local/Cellar/opencv/4.0.1/include/opencv4/
 LIBPATH := -L/usr/local/Cellar/opencv/4.0.1/lib -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs
 else
 CC := g++-8
+OPTIONS += -lstdc++fs
 INCPATH := `pkg-config opencv --cflags`
 LIBPATH := `pkg-config opencv --libs`
 endif
