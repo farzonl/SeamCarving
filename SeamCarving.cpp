@@ -3,7 +3,9 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <iostream>
-#include <cfloat> 
+#include <cfloat>
+#include <mutex>          // std::mutex
+std::mutex mtx;
 
 SeamCarving::SeamCarving(const cv::Mat &img,int seams) : image(img), seams(seams) {}
 
@@ -34,6 +36,7 @@ void SeamCarving::init() {
 }
 
 void SeamCarving::computeNewFinalImage(int sliderPos) {
+    mtx.lock();
     if(sliderPos == 0) {
         this->finalImage =  this->image;
         return;
@@ -74,6 +77,7 @@ void SeamCarving::computeNewFinalImage(int sliderPos) {
         }
         this->finalImage = newFrame;
     }
+    mtx.unlock();
 }
 
 const cv::Mat& SeamCarving::getFinalImage() {
