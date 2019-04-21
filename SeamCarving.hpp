@@ -13,12 +13,13 @@ class SeamCarving {
     bool getBlockUpdateStatus();
     void showSeamsImg();
   protected:
-    SeamCarving(const cv::Mat &img,int seams);
+    SeamCarving(const cv::Mat &img,int seams, bool grow);
     void init();
     virtual cv::Mat drawSeam(const cv::Mat &frame, const std::vector<int> &seam) = 0;
     cv::Mat image;
     cv::Mat finalImage;
     int seams;
+    bool grow;
     int sliderMax;
     int sliderPos;
     std::vector<std::vector<int>> vecSeams;
@@ -31,6 +32,8 @@ class SeamCarving {
     std::vector<int> getLeastImportantPath(const cv::Mat &importanceMap);
     cv::Mat removeLeastImportantPath(const cv::Mat &original, const std::vector<int> &seam);
     void removePixel(const cv::Mat &original, cv::Mat &outputMap, int row, int minCol);
+    cv::Mat addLeastImportantPath(const cv::Mat &original, const std::vector<int> &seam);
+    void addPixel(const cv::Mat &original, cv::Mat &outputMat, int row, int minCol);
     bool blockUpdate = false;
 
 };
@@ -38,14 +41,14 @@ class SeamCarving {
 class SeamCarvingHorizontal : public SeamCarving
 {
   public:
-    SeamCarvingHorizontal(char* fileName, int seams=100);
+    SeamCarvingHorizontal(char* fileName, int seams=100, bool grow=false);
   protected:
     virtual cv::Mat drawSeam(const cv::Mat &frame, const std::vector<int> &seam) override;
 };
 
 class SeamCarvingVertical : public SeamCarving {
   public:
-    SeamCarvingVertical(char* fileName, int seams=100);
+    SeamCarvingVertical(char* fileName, int seams=100, bool grow=false);
     virtual void computeNewFinalImage(int pos) override;
   protected:
     virtual cv::Mat drawSeam(const cv::Mat &frame, const std::vector<int> &seam) override;
