@@ -3,9 +3,10 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <iostream>
+#include <filesystem>
 #include <cfloat> 
 
-SeamCarving::SeamCarving(const cv::Mat &img, int seams, int grow) : image(img), seams(seams) {}
+SeamCarving::SeamCarving(const cv::Mat &img, int seams, bool grow) : image(img), seams(seams) {}
 
 void SeamCarving::init() {
     cv::Mat newFrame = image.clone();
@@ -100,6 +101,7 @@ void SeamCarving::showSeamsImg() {
     for(int i = 0; i < sliderPos; i++) {
         seamsFrame = drawSeam(seamsFrame, this->vecSeams[i]);
     }
+    cv::imwrite("output/seams_image.jpg", seamsFrame);
     cv::imshow( "Image Seams", seamsFrame);
 }
 
@@ -139,6 +141,11 @@ void SeamCarving::setBlockUpdate(bool bUpdate) {
  }
 
 void SeamCarving::showImage() {
+
+    if(!std::filesystem::exists("output")) {
+        std::filesystem::create_directory("output");
+    }
+
     if( image.empty() ) 
     {
         std::cout <<  "Could not open raw image" << std::endl ;
@@ -158,6 +165,7 @@ void SeamCarving::showImage() {
     cv::Mat u8_image;
     gradient.convertTo(u8_image, CV_8U);
     
+    cv::imwrite("output/gradient_image.jpg", u8_image);
     cv::imshow("gradient Image", u8_image);
 
     namedWindow( "intensity Image", cv::WINDOW_AUTOSIZE );
@@ -166,6 +174,7 @@ void SeamCarving::showImage() {
     cv::Mat dst;
     cv::normalize(intensityMat, dst, 0, 255, cv::NORM_MINMAX);
     dst.convertTo(u8_image2, CV_8U);
+    cv::imwrite("output/intensity_image.jpg", u8_image2);
     cv::imshow( "intensity Image", u8_image2);
 
     //cv::Mat engImg = GetEnergyImg(image);
@@ -181,6 +190,7 @@ void SeamCarving::showImage() {
     namedWindow( "Final Image", cv::WINDOW_AUTOSIZE );
     cv::createTrackbar("Seams", "Final Image", &sliderPos, sliderMax, onChange, this);
     //cv::setMouseCallback("Final Image", onMouse, this );
+    cv::imwrite("output/final_image.jpg", finalImage);
     cv::imshow("Final Image", finalImage);
     cv::waitKey(0); 
 }

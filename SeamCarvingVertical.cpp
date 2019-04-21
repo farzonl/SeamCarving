@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cfloat> 
 
-SeamCarvingVertical::SeamCarvingVertical(char* fileName, int seams, int grow) : 
+SeamCarvingVertical::SeamCarvingVertical(char* fileName, int seams, bool grow) : 
     SeamCarving( cv::imread(fileName, cv::IMREAD_COLOR), seams, grow)
 {
     this->sliderMax = this->image.rows;

@@ -1,5 +1,5 @@
 #_____________STATIC STUFF__________________________________________
-OPTIONS =  -std=c++11 
+OPTIONS =  -std=c++17 -lstdc++fs
 FILES := SeamCarving.cpp SeamCarvingHorizontal.cpp SeamCarvingVertical.cpp main.cpp
 UNAME := $(shell uname)
 EXE   := $(UNAME)_SeamCarving
@@ -9,7 +9,7 @@ CC := clang++
 INCPATH := -I/usr/local/Cellar/opencv/4.0.1/include/opencv4/
 LIBPATH := -L/usr/local/Cellar/opencv/4.0.1/lib -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs
 else
-CC := g++
+CC := g++-8
 INCPATH := `pkg-config opencv --cflags`
 LIBPATH := `pkg-config opencv --libs`
 endif

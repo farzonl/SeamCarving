@@ -13,13 +13,13 @@ class SeamCarving {
     bool getBlockUpdateStatus();
     void showSeamsImg();
   protected:
-    SeamCarving(const cv::Mat &img,int seams, int grow);
+    SeamCarving(const cv::Mat &img,int seams, bool grow);
     void init();
     virtual cv::Mat drawSeam(const cv::Mat &frame, const std::vector<int> &seam) = 0;
     cv::Mat image;
     cv::Mat finalImage;
     int seams;
-    int grow;
+    bool grow;
     int sliderMax;
     int sliderPos;
     std::vector<std::vector<int>> vecSeams;
@@ -41,14 +41,14 @@ class SeamCarving {
 class SeamCarvingHorizontal : public SeamCarving
 {
   public:
-    SeamCarvingHorizontal(char* fileName, int seams=100, int grow=0);
+    SeamCarvingHorizontal(char* fileName, int seams=100, bool grow=false);
   protected:
     virtual cv::Mat drawSeam(const cv::Mat &frame, const std::vector<int> &seam) override;
 };
 
 class SeamCarvingVertical : public SeamCarving {
   public:
-    SeamCarvingVertical(char* fileName, int seams=100, int grow=0);
+    SeamCarvingVertical(char* fileName, int seams=100, bool grow=false);
     virtual void computeNewFinalImage(int pos) override;
   protected:
     virtual cv::Mat drawSeam(const cv::Mat &frame, const std::vector<int> &seam) override;
