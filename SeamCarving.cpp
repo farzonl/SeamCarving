@@ -3,7 +3,9 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <iostream>
+#ifndef __clang__
 #include <filesystem>
+#endif
 #include <cfloat> 
 
 SeamCarving::SeamCarving(const cv::Mat &img, int seams, bool grow) : image(img), seams(seams) {}
@@ -141,11 +143,11 @@ void SeamCarving::setBlockUpdate(bool bUpdate) {
  }
 
 void SeamCarving::showImage() {
-
+#ifndef __clang__
     if(!std::filesystem::exists("output")) {
         std::filesystem::create_directory("output");
     }
-
+#endif
     if( image.empty() ) 
     {
         std::cout <<  "Could not open raw image" << std::endl ;
