@@ -25,18 +25,18 @@ void arg6Behavior(int argc, char *argv[]) {
     std::cout << imgPath << std::endl;
     for (int i = 2; i < argc; i++) {
         char* curParam = argv[i];
-        std::cout << curParam << std::endl;
+        
         if( strcmp(argv[i],"-h") == 0 ) {
-            verticle = 0;
+            verticle = false;
         } 
         else if ( strcmp(argv[i],"-v") == 0 ) {
-            verticle = 1;
+            verticle = true;
         }
         else if ( strcmp(argv[i],"-g") == 0 ) {
-            grow = 1;
+            grow = true;
         }
         else if ( strcmp(argv[i],"-r") == 0 ) {
-            grow = 0;
+            grow = false;
         }
         else if ( strcmp(argv[i],"-n") == 0 ) {
             int n = atoi(argv[++i]);
@@ -54,12 +54,10 @@ void arg6Behavior(int argc, char *argv[]) {
     }
 
     if ( verticle  ) {
-        std::cout << "verticle" << std::endl;
         SeamCarvingVertical sm(imgPath, numberSeams, grow);
         sm.showImage();
     }
     else {
-        std::cout << "horizontal" << std::endl;
         SeamCarvingHorizontal sm(imgPath, numberSeams, grow);
         sm.showImage();
     }

@@ -6,7 +6,8 @@
 #include <filesystem>
 #include <cfloat> 
 
-SeamCarving::SeamCarving(const cv::Mat &img, int seams, bool grow) : image(img), seams(seams) {}
+SeamCarving::SeamCarving(const cv::Mat &img, int seams, bool grow) : 
+image(img), seams(seams), grow(grow) {}
 
 void SeamCarving::init() {
     cv::Mat newFrame = image.clone();
@@ -32,7 +33,7 @@ void SeamCarving::init() {
             break;
         }
     }
-
+    
     if (grow) {
         cv::Mat growMat = image.clone();
 
