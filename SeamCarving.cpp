@@ -84,12 +84,20 @@ void SeamCarving::computeNewFinalImage(int sliderPos) {
     } else if (sliderPos < vecSeams.size()) {
         cv::Mat newFrame = image.clone();
         for(int i = 0; i < this->sliderPos; i++) { // TODO check if it is faster to add seams back (probably not)
-            newFrame = removeLeastImportantPath(newFrame,vecSeams[i]);
+            
+            if (this->grow) {
+                newFrame = addLeastImportantPath(newFrame,vecSeams[i]);
+            }
+            else {
+                newFrame = removeLeastImportantPath(newFrame,vecSeams[i]);
+            }
+
             if(newFrame.rows == 0 && newFrame.cols == 0) {
                 this->finalImage = this->image;
                 break;
             }
         }
+        std::cout << newFrame.rows << ", " << newFrame.cols << std::endl;
         this->finalImage = newFrame;
     }
 }
