@@ -2,7 +2,7 @@
 #define __SEAM__CARVING_HPP__
 
 #include <opencv2/core/core.hpp>
-#define DEBUG 1
+#define DEBUG 0
 
 class SeamCarving {
   public:
@@ -50,6 +50,9 @@ class SeamCarvingVertical : public SeamCarving {
   public:
     SeamCarvingVertical(char* fileName, int seams=100, bool grow=false);
     virtual void computeNewFinalImage(int pos) override;
+#if DEBUG
+    virtual void showSeamsImg() override;
+#endif
   protected:
     virtual cv::Mat drawSeam(const cv::Mat &frame, const std::vector<int> &seam) override;
 };

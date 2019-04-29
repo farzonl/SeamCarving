@@ -80,7 +80,16 @@ void SeamCarving::computeNewFinalImage(int sliderPos) {
                 break;
             }
         }
-        this->finalImage = newFrame;
+        if (grow) {
+        cv::Mat growMat = image.clone();
+
+        for (int i = 0; i < this->vecSeams.size(); i++) {
+            growMat = addLeastImportantPath(growMat,this->vecSeams[i]);
+        }
+        this->finalImage = growMat;
+        } else {
+            this->finalImage = newFrame;
+        }
     } else if (sliderPos < vecSeams.size()) {
         cv::Mat newFrame = image.clone();
         for(int i = 0; i < this->sliderPos; i++) { // TODO check if it is faster to add seams back (probably not)
