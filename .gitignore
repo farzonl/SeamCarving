@@ -2,3 +2,6 @@
 *_SeamCarving
 Debug/*
 output/*
+.DS_Store
+*.gch
+.vscode/

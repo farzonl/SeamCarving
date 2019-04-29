@@ -2,7 +2,7 @@
 #define __SEAM__CARVING_HPP__
 
 #include <opencv2/core/core.hpp>
-#define DEBUG 1
+#define DEBUG 0
 
 class SeamCarving {
   public:
