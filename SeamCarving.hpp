@@ -11,7 +11,7 @@ class SeamCarving {
     virtual void computeNewFinalImage(int pos);
     void setBlockUpdate(bool bUpdate);
     bool getBlockUpdateStatus();
-    void showSeamsImg();
+    virtual void showSeamsImg();
   protected:
     SeamCarving(const cv::Mat &img,int seams, bool grow);
     void init();
@@ -50,6 +50,9 @@ class SeamCarvingVertical : public SeamCarving {
   public:
     SeamCarvingVertical(char* fileName, int seams=100, bool grow=false);
     virtual void computeNewFinalImage(int pos) override;
+#if DEBUG
+    virtual void showSeamsImg() override;
+#endif
   protected:
     virtual cv::Mat drawSeam(const cv::Mat &frame, const std::vector<int> &seam) override;
 };
