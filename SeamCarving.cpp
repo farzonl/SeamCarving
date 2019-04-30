@@ -81,12 +81,13 @@ void SeamCarving::computeNewFinalImage(int sliderPos) {
             }
         }
         if (grow) {
-        cv::Mat growMat = image.clone();
+            cv::Mat growMat = image.clone();
 
-        for (int i = 0; i < this->vecSeams.size(); i++) {
-            growMat = addLeastImportantPath(growMat,this->vecSeams[i]);
-        }
-        this->finalImage = growMat;
+            for (int i = 0; i < this->vecSeams.size(); i++) {
+                growMat = addLeastImportantPath(growMat,this->vecSeams[i]);
+            }
+
+            this->finalImage = growMat;
         } else {
             this->finalImage = newFrame;
         }
@@ -106,7 +107,6 @@ void SeamCarving::computeNewFinalImage(int sliderPos) {
                 break;
             }
         }
-        std::cout << newFrame.rows << ", " << newFrame.cols << std::endl;
         this->finalImage = newFrame;
     }
 }

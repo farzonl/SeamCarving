@@ -11,7 +11,7 @@ class SeamCarving {
     virtual void computeNewFinalImage(int pos);
     void setBlockUpdate(bool bUpdate);
     bool getBlockUpdateStatus();
-    void showSeamsImg();
+    virtual void showSeamsImg();
   protected:
     SeamCarving(const cv::Mat &img,int seams, bool grow);
     void init();
