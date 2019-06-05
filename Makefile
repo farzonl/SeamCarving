@@ -1,23 +1,26 @@
 #_____________STATIC STUFF__________________________________________
 OPTIONS =  -std=c++17
-FILES := SeamCarving.cpp SeamCarvingHorizontal.cpp SeamCarvingVertical.cpp main.cpp
+FILES := $(shell echo *.cpp  | sed -e 's/cpp/o/g')
 UNAME := $(shell uname)
 EXE   := $(UNAME)_SeamCarving
 #_____________STATIC STUFF________________________________________________
 ifeq ($(UNAME),Darwin)
 #OPTIONS += -lc++fs
-CC := /usr/local/Cellar/llvm/8.0.0/bin/clang++
-INCPATH := -I/usr/local/Cellar/opencv/4.0.1/include/opencv4/
-LIBPATH := -L/usr/local/Cellar/opencv/4.0.1/lib -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs
+CC := clang++
+INCPATH := -I/usr/local/include/opencv4/
+LIBPATH := -L/usr/local/lib -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs
 else
-CC := g++-8
+CC := g++
 OPTIONS += -lstdc++fs
 INCPATH := `pkg-config opencv --cflags`
 LIBPATH := `pkg-config opencv --libs`
 endif
 CFLAGS := $(INCPATH) $(LIBPATH) $(OPTIONS)
 #Small enough project so lets rebuild everytime
-run : rebuild
+
+build : build-release
+
+run : build-release
 	./$(EXE) img/sampleImg2.jpg -h -n 20
 
 
@@ -43,6 +46,9 @@ run-valgrind : build-debug
 
 build-release : CFLAGS += -O3
 build-release : $(EXE)
+
+%.o: %.cpp
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(EXE) : $(FILES)
 	$(CC) $^ -o $(EXE) $(CFLAGS)
