@@ -5,7 +5,7 @@ matrix:
   include:
     - os: osx
       osx_image: xcode 8.3
-      compiler: clang
+      compiler: clang++
       addons:
         homebrew:
           packages:
@@ -20,13 +20,12 @@ matrix:
        - make
     - os: linux
       dist: bionic
-      compiler: gcc-8
+      compiler: g++-8
       before_install:
-        - sudo add-apt-repository ppa:ubuntu-toolchain-r/test
         - sudo apt-get update
-        - sudo apt-get install gcc-8 g++-8
+        - sudo apt-get install -y gcc-8 g++-8
         - g++-8 --version
-        - sudo apt-get install libopencv-dev pkg-config
+        - sudo apt-get install -y libopencv-dev pkg-config
       env:
         - CC=g++-8
       script:
