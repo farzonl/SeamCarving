@@ -35,3 +35,11 @@ void SeamCarvingVertical::computeNewFinalImage(int pos) {
     this->image = oldImage;
     this->finalImage =this->finalImage.t();
 }
+#if DEBUG
+void SeamCarvingVertical::showSeamsImg() {
+    cv::Mat oldImage = this->image;
+    this->image = this->image.t();
+    SeamCarving::showImage();
+    this->image = oldImage;
+}
+#endif

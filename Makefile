@@ -1,5 +1,5 @@
 #_____________STATIC STUFF__________________________________________
-FILES := SeamCarving.cpp SeamCarvingHorizontal.cpp SeamCarvingVertical.cpp main.cpp
+FILES := $(shell echo *.cpp  | sed -e 's/cpp/o/g')
 UNAME := $(shell uname)
 EXE   := $(UNAME)_SeamCarving
 #_____________STATIC STUFF________________________________________________
@@ -11,13 +11,15 @@ opencvInclude := $(shell dirname $(opencvLib))/include/opencv4/
 INCPATH := -I$(opencvInclude)
 LIBPATH := -L$(opencvLib) -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs
 else
-CC := g++
 OPTIONS := -std=c++17 -lstdc++fs
+CC := g++
 INCPATH := `pkg-config opencv --cflags`
 LIBPATH := `pkg-config opencv --libs`
 endif
 CFLAGS := $(INCPATH) $(LIBPATH) $(OPTIONS)
+
 build: build-release
+
 run : build-release
 	./$(EXE) img/sampleImg2.jpg -h -n 20
 
@@ -44,6 +46,9 @@ run-valgrind : build-debug
 
 build-release : CFLAGS += -O3
 build-release : $(EXE)
+
+%.o: %.cpp
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(EXE) : $(FILES)
 	$(CC) $^ -o $(EXE) $(CFLAGS)
