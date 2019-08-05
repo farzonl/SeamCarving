@@ -5,3 +5,6 @@ output/*
 .DS_Store
 *.gch
 .vscode/
+*.gcov 
+*.gcda 
+*.gcno

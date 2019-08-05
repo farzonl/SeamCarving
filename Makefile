@@ -2,15 +2,22 @@
 FILES := $(shell echo *.cpp  | sed -e 's/cpp/o/g')
 UNAME := $(shell uname)
 EXE   := $(UNAME)_SeamCarving
+OPTIONS := -coverage
 #_____________STATIC STUFF________________________________________________
 ifeq ($(UNAME),Darwin)
-OPTIONS :=  -std=c++11
+ifeq ($(CC), clang)
+CC := clang++
+endif
+OPTIONS +=  -std=c++11
 opencvLib:= $(shell dirname $(shell brew ls opencv | grep .dylib  | head -1))
 opencvInclude := $(shell dirname $(opencvLib))/include/opencv4/
 INCPATH := -I$(opencvInclude)
 LIBPATH := -L$(opencvLib) -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs
 else
-OPTIONS := -std=c++17 -lstdc++fs
+ifeq ($(CC), gcc)
+CC := g++
+endif
+OPTIONS += -std=c++17 -lstdc++fs
 INCPATH := `pkg-config opencv --cflags`
 LIBPATH := `pkg-config opencv --libs`
 endif
@@ -46,16 +53,16 @@ build-release : CFLAGS += -O3
 build-release : $(EXE)
 
 %.o: %.cpp
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CXX) -c -o $@ $< $(CFLAGS)
 
 $(EXE) : $(FILES)
-	$(CC) $^ -o $(EXE) $(CFLAGS)
+	$(CXX) $^ -o $(EXE) $(CFLAGS)
 
 build-debug : CFLAGS += -g -DDEBUG
 build-debug : $(EXE)
 
 clean :
-	rm -rf *.o* $(EXE)*
+	rm -rf *.o* $(EXE)* *.gcov *.gcda *.gcno
 
 rebuild : clean build-release
 
