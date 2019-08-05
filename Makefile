@@ -5,18 +5,14 @@ EXE   := $(UNAME)_SeamCarving
 OPTIONS := -coverage
 #_____________STATIC STUFF________________________________________________
 ifeq ($(UNAME),Darwin)
-ifeq ($(CC), clang)
-CC := clang++
-endif
+CXX := clang++
 OPTIONS +=  -std=c++11
 opencvLib:= $(shell dirname $(shell brew ls opencv | grep .dylib  | head -1))
 opencvInclude := $(shell dirname $(opencvLib))/include/opencv4/
 INCPATH := -I$(opencvInclude)
 LIBPATH := -L$(opencvLib) -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs
 else
-ifeq ($(CC), gcc)
-CC := g++
-endif
+CXX := g++
 OPTIONS += -std=c++17 -lstdc++fs
 INCPATH := `pkg-config opencv --cflags`
 LIBPATH := `pkg-config opencv --libs`
@@ -53,10 +49,10 @@ build-release : CFLAGS += -O3
 build-release : $(EXE)
 
 %.o: %.cpp
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CXX) -c -o $@ $< $(CFLAGS)
 
 $(EXE) : $(FILES)
-	$(CC) $^ -o $(EXE) $(CFLAGS)
+	$(CXX) $^ -o $(EXE) $(CFLAGS)
 
 build-debug : CFLAGS += -g -DDEBUG
 build-debug : $(EXE)
