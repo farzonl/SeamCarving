@@ -16,6 +16,7 @@
 brew install opencv
 ```
 ### For Linux
+- pkg-config (also needed)
 ```
 sudo apt-get install libopencv-dev pkg-config
 ```

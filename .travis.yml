@@ -1,3 +1,4 @@
+cache: ccache
 matrix:
   include:
     - os: osx
@@ -7,7 +8,10 @@ matrix:
         homebrew:
           packages:
            - opencv
+           - ccache
           update: true
+      install:
+        - export PATH="/usr/local/opt/ccache/libexec:$PATH"
       script:
        - make
     - os: linux
@@ -16,7 +20,7 @@ matrix:
       addons:
         apt:
           update: true
-      dist: xenial
+      dist: bionic
       compiler: gcc
       script:
         - make
