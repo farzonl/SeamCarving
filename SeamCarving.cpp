@@ -3,7 +3,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <iostream>
-#ifndef __clang__
+#if __cplusplus >= 201703L
 #include <filesystem>
 #endif
 #include <cfloat> 
@@ -144,7 +144,7 @@ void SeamCarving::setBlockUpdate(bool bUpdate) {
  }
 
 void SeamCarving::showImage() {
-#ifndef __clang__
+#if __cplusplus >= 201703L
     if(!std::filesystem::exists("output")) {
         std::filesystem::create_directory("output");
     }

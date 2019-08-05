@@ -1,0 +1,26 @@
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode 8.3
+      compiler: clang
+      addons:
+        homebrew:
+          packages:
+           - opencv
+          update: true
+      script:
+       - make
+    - os: linux
+      before_install:
+       - sudo apt-get install libopencv-dev pkg-config
+      addons:
+        apt:
+          update: true
+      dist: xenial
+      compiler: gcc
+      script:
+        - make
+      after_success:
+       - export CODECOV_TOKEN="619baaa1-1d7b-474e-9409-8b490f3e148f"
+       - gcov *.cpp
+       - bash <(curl -s https://codecov.io/bash)

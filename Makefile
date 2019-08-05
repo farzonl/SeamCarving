@@ -1,23 +1,24 @@
 #_____________STATIC STUFF__________________________________________
-OPTIONS =  -std=c++17
 FILES := SeamCarving.cpp SeamCarvingHorizontal.cpp SeamCarvingVertical.cpp main.cpp
 UNAME := $(shell uname)
 EXE   := $(UNAME)_SeamCarving
 #_____________STATIC STUFF________________________________________________
 ifeq ($(UNAME),Darwin)
-#OPTIONS += -lc++fs
-CC := /usr/local/Cellar/llvm/8.0.0/bin/clang++
-INCPATH := -I/usr/local/Cellar/opencv/4.0.1/include/opencv4/
-LIBPATH := -L/usr/local/Cellar/opencv/4.0.1/lib -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs
+OPTIONS :=  -std=c++11
+CC := clang++
+opencvLib:= $(shell dirname $(shell brew ls opencv | grep .dylib  | head -1))
+opencvInclude := $(shell dirname $(opencvLib))/include/opencv4/
+INCPATH := -I$(opencvInclude)
+LIBPATH := -L$(opencvLib) -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs
 else
-CC := g++-8
-OPTIONS += -lstdc++fs
+CC := g++
+OPTIONS := -std=c++17 -lstdc++fs
 INCPATH := `pkg-config opencv --cflags`
 LIBPATH := `pkg-config opencv --libs`
 endif
 CFLAGS := $(INCPATH) $(LIBPATH) $(OPTIONS)
-#Small enough project so lets rebuild everytime
-run : rebuild
+build: build-release
+run : build-release
 	./$(EXE) img/sampleImg2.jpg -h -n 20
 
 
