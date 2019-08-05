@@ -53,10 +53,10 @@ build-release : CFLAGS += -O3
 build-release : $(EXE)
 
 %.o: %.cpp
-	$(CXX) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(EXE) : $(FILES)
-	$(CXX) $^ -o $(EXE) $(CFLAGS)
+	$(CC) $^ -o $(EXE) $(CFLAGS)
 
 build-debug : CFLAGS += -g -DDEBUG
 build-debug : $(EXE)
