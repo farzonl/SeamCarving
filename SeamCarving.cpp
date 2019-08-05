@@ -145,9 +145,9 @@ static void onMouse( int event, int x, int y, int, void* object)
         event == cv::EVENT_MBUTTONDOWN
       ) {
           sc->setBlockUpdate(true);
-    } else if(cv::EVENT_LBUTTONUP ||
-              cv::EVENT_RBUTTONUP ||
-              cv::EVENT_MBUTTONUP) { 
+    } else if(event == cv::EVENT_LBUTTONUP ||
+              event == cv::EVENT_RBUTTONUP ||
+              event == cv::EVENT_MBUTTONUP) { 
          sc->setBlockUpdate(false);
      }
 }
