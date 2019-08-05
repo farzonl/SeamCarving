@@ -1,4 +1,5 @@
 cache: ccache
+language: c++
 matrix:
   include:
     - os: osx
@@ -10,18 +11,27 @@ matrix:
            - opencv
            - ccache
           update: true
+      env:
+        - CC=clang++
       install:
         - export PATH="/usr/local/opt/ccache/libexec:$PATH"
       script:
        - make
     - os: linux
-      before_install:
-       - sudo apt-get install libopencv-dev pkg-config
+      dist: bionic
+      sudo: required
+      compiler: gcc-8
       addons:
         apt:
           update: true
-      dist: bionic
-      compiler: gcc
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - gcc-8
+            - libopencv-dev
+            - pkg-config
+      env:
+        - CC=gcc-8
       script:
         - make
       after_success:
