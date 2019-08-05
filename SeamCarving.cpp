@@ -377,23 +377,11 @@ void SeamCarving::removePixel(const cv::Mat &original, cv::Mat &outputMat, int r
     int byte2 = rawOrig[originRowStart + minCol * channels + 1];
     int byte3 = rawOrig[originRowStart + minCol * channels + 2];
 
-    if (byte1 < 0)
-        byte1 += 256;
-    if (byte2 < 0)
-        byte2 += 256;
-    if (byte3 < 0)
-        byte3 += 256;
 
     if (rightPixel < width) {
         int byte1R = rawOrig[originRowStart + rightPixel * channels];
         int byte2R = rawOrig[originRowStart + rightPixel * channels + 1];
         int byte3R = rawOrig[originRowStart + rightPixel * channels + 2];
-        if (byte1R < 0)
-            byte1R += 256;
-        if (byte2R < 0)
-            byte2R += 256;
-        if (byte3R < 0)
-            byte3R += 256;
         rawOutput[newRowStart + minCol * channels] = (unsigned char)((byte1 + byte1R) / 2);
         rawOutput[newRowStart + minCol * channels + 1] = (unsigned char)((byte2 + byte2R) / 2);
         rawOutput[newRowStart + minCol * channels + 2] = (unsigned char)((byte3 + byte3R) / 2);
@@ -403,9 +391,6 @@ void SeamCarving::removePixel(const cv::Mat &original, cv::Mat &outputMat, int r
         int byte1L = rawOrig[originRowStart + leftPixel*channels];
         int byte2L = rawOrig[originRowStart + leftPixel*channels+1];
         int byte3L = rawOrig[originRowStart + leftPixel*channels+2];
-        if(byte1L < 0) byte1L += 256;
-        if(byte2L < 0) byte2L += 256;
-        if(byte3L < 0) byte3L += 256;
         rawOutput[newRowStart + leftPixel*channels] = (unsigned char) ((byte1 + byte1L)/2);
         rawOutput[newRowStart + leftPixel*channels+1] = (unsigned char) ((byte2 + byte2L)/2);
         rawOutput[newRowStart + leftPixel*channels+2] = (unsigned char) ((byte3 + byte3L)/2);
@@ -454,23 +439,11 @@ void SeamCarving::addPixel(const cv::Mat &original, cv::Mat &outputMat, int row,
     int byte2 = rawOrig[originRowStart + minCol * channels + 1];
     int byte3 = rawOrig[originRowStart + minCol * channels + 2];
 
-    if (byte1 < 0)
-        byte1 += 256;
-    if (byte2 < 0)
-        byte2 += 256;
-    if (byte3 < 0)
-        byte3 += 256;
 
     if (rightPixel < width) {
         int byte1R = rawOrig[originRowStart + rightPixel * channels];
         int byte2R = rawOrig[originRowStart + rightPixel * channels + 1];
         int byte3R = rawOrig[originRowStart + rightPixel * channels + 2];
-        if (byte1R < 0)
-            byte1R += 256;
-        if (byte2R < 0)
-            byte2R += 256;
-        if (byte3R < 0)
-            byte3R += 256;
         rawOutput[newRowStart + minCol * channels] = (unsigned char)((byte1 + byte1R) / 2);
         rawOutput[newRowStart + minCol * channels + 1] = (unsigned char)((byte2 + byte2R) / 2);
         rawOutput[newRowStart + minCol * channels + 2] = (unsigned char)((byte3 + byte3R) / 2);
@@ -480,9 +453,6 @@ void SeamCarving::addPixel(const cv::Mat &original, cv::Mat &outputMat, int row,
         int byte1L = rawOrig[originRowStart + leftPixel*channels];
         int byte2L = rawOrig[originRowStart + leftPixel*channels+1];
         int byte3L = rawOrig[originRowStart + leftPixel*channels+2];
-        if(byte1L < 0) byte1L += 256;
-        if(byte2L < 0) byte2L += 256;
-        if(byte3L < 0) byte3L += 256;
         rawOutput[newRowStart + leftPixel*channels] = (unsigned char) ((byte1 + byte1L)/2);
         rawOutput[newRowStart + leftPixel*channels+1] = (unsigned char) ((byte2 + byte2L)/2);
         rawOutput[newRowStart + leftPixel*channels+2] = (unsigned char) ((byte3 + byte3L)/2);
