@@ -1,5 +1,6 @@
 cache: ccache
 language: c++
+sudo: required
 matrix:
   include:
     - os: osx
@@ -19,19 +20,15 @@ matrix:
        - make
     - os: linux
       dist: bionic
-      sudo: required
       compiler: gcc-8
-      addons:
-        apt:
-          update: true
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - gcc-8
-            - libopencv-dev
-            - pkg-config
+      before_install:
+        - sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        - sudo apt-get update
+        - sudo apt-get install gcc-8 g++-8
+        - g++-8 --version
+        - sudo apt-get install libopencv-dev pkg-config
       env:
-        - CC=gcc-8
+        - CC=g++-8
       script:
         - make
       after_success:
