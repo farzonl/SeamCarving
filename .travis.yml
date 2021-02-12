@@ -4,7 +4,7 @@ sudo: required
 matrix:
   include:
     - os: osx
-      osx_image: xcode 8.3
+      osx_image: xcode12.2
       compiler: clang++
       addons:
         homebrew:
